@@ -1,0 +1,11 @@
+path: './assembles'
+rules:
+  - type: dir
+    assembly_type:  test
+#    older_in_days: 4
+  - type: dir
+    assembly_type:  release
+    older_in_days: 100
+  - type: file
+    mask: "[^\\s]*.tar.gz"
+#    older_in_days: 1
