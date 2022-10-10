@@ -45,7 +45,7 @@ def older(days, file_path):
     delta = datetime.timedelta(days=days)
     return then + delta < now
 
-def match_regex(regexp, file_name):
+def match_regex(regexp, file_path):
     res = re.match(regexp, file_name)
     return res is not None
 
@@ -61,7 +61,7 @@ def iterate_over_files(path, rules):
             iterate_over_files(path+file, rules)
         else:
             for rule in rules:
-                if match_regex(rule['mask'], file) and older(rule.get('older_in_days'), path+file):
+                if match_regex(rule['mask'], path+file) and older(rule.get('older_in_days'), path+file):
                     print(f'delete {path + file}')
                     # os.remove(path+file)
                     break
