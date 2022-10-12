@@ -7,8 +7,8 @@ import time
 
 import yaml
 import datetime
-import cerberus
-
+# import cerberus
+DEBUG = True
 # def validate(obj):
 #     v = cerberus.Validator(schema)
 #     res =  v.validate(obj)
@@ -62,8 +62,10 @@ def iterate_over_files(path, rules):
         else:
             for rule in rules:
                 if match_regex(rule['mask'], file) and older(rule.get('older_in_days'), path+file):
-                    print(f'delete {path + file}')
-                    # os.remove(path+file)
+                    if DEBUG:
+                        print(f'delete {path + file}')
+                    else:
+                        os.remove(path+file)
                     break
 
 
@@ -81,8 +83,10 @@ def iterate_over_dirs(path, rules):
                         check_assembly(rule["assembly_type"], file)         # check assembly type
                         and older(rule.get("older_in_days"), path + file)   # check if file is old enough
                 ):
-                    print(f'delete {path+file}')
-                    # shutil.rmtree(path+file)
+                    if DEBUG:
+                        print(f'delete {path+file}')
+                    else:
+                        shutil.rmtree(path+file)
                     break
 
 
