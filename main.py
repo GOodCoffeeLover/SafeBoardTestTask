@@ -51,7 +51,7 @@ def older(days, file_path):
     return then + delta < now
 
 def match_regex(regexp, file_path):
-    res = re.match(regexp, file_name)
+    res = re.match(regexp, file_path)
     return res is not None
 
 
@@ -99,17 +99,20 @@ def iterate_over_dirs(path, rules):
 
 
 def main():
-    path = ''
-    rules = []
+    path = '' # path ot file
+    rules = [] # deleting rules
 
+    # get config
     with open("config.yaml") as file:
         yml = yaml.load(file, Loader=yaml.Loader)
         # print(json.dumps(yml, indent=2) )
         path = yml['path']
         rules = yml['rules']
-
+    # split rules for dirs and files
     dir_rules, file_rules = split_rules(rules)
+    # first iterate over dirs
     iterate_over_dirs(path, dir_rules)
+    # second over files in dirs
     iterate_over_files(path, file_rules)
 
 
