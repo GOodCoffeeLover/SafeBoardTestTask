@@ -8,7 +8,7 @@ import time
 import yaml
 import datetime
 # import cerberus
-DEBUG = True
+DEBUG = False
 # def validate(obj):
 #     v = cerberus.Validator(schema)
 #     res =  v.validate(obj)
@@ -16,15 +16,18 @@ DEBUG = True
 #     print(v.errors)
 #     return
 
+# split rules into two rule groups
 def split_rules(rules):
     dir_rules, file_rules = [], []
     for rule in rules:
         if rule['type'] == 'dir':
             dir_rules.append(rule)
-        else:
+        elif rule['type'] == 'file':
             file_rules.append(rule)
+
     return dir_rules, file_rules
 
+# check what type of assembly dir
 def is_release(dir_name):
     versions = dir_name.split('.')
     if len(versions) != 4:
@@ -34,9 +37,11 @@ def is_release(dir_name):
     else:
         return True
 
+#check if assembly_type is target
 def check_assembly(assembly_type, file_name):
     return (assembly_type == 'release') == is_release(file_name)
 
+#check if file_path file older then days days
 def older(days, file_path):
     if days is None:
         return True
@@ -45,11 +50,12 @@ def older(days, file_path):
     delta = datetime.timedelta(days=days)
     return then + delta < now
 
-def match_regex(regexp, file_name):
+def match_regex(regexp, file_path):
     res = re.match(regexp, file_name)
     return res is not None
 
 
+# function of iterating over files and applying deleting rules
 def iterate_over_files(path, rules):
     if path[-1] != '/':
         path += "/"
@@ -68,7 +74,7 @@ def iterate_over_files(path, rules):
                         os.remove(path+file)
                     break
 
-
+# function of iterating over dirs and applying deleting rules
 def iterate_over_dirs(path, rules):
     if path[-1] != '/':
         path += "/"
@@ -78,7 +84,7 @@ def iterate_over_dirs(path, rules):
     for file in files:
         if os.path.isdir(path + file):
             for rule in rules:
-                # print(f'{path+file: <20}, ass {check_assembly(rule["assembly_type"], file)}, old {older(rule.get("older_in_days"), path + file)}')
+
                 if (
                         check_assembly(rule["assembly_type"], file)         # check assembly type
                         and older(rule.get("older_in_days"), path + file)   # check if file is old enough
